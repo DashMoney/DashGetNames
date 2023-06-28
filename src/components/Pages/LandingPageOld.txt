@@ -1,0 +1,93 @@
+ {/* {this.state.showAlert ? <Alert variant="warning" onClose={() => this.handleAlert()} dismissible>
+        <Alert.Heading>Welcome to DashGetNames - Beta Testers!</Alert.Heading>
+        <p>
+          Aww yeah, thank you for reading this important message. To use DashGetNames, first two things must be working.
+        </p>
+        <ul>
+          <li>First of all, you must <b>Allow</b> "Insecure content". In Chrome Browser, do this by clicking the "Lock Icon" by the URL -{'>'} Site Settings -{'>'} Insecure Content -{'>'} Allow. The reason for this is <a target="blank" href="https://dashplatform.readme.io/docs/reference-frequently-asked-questions">
+              Frequently Asked Questions - Why can't I connect to DAPI from a page served over HTTPS?
+              </a></li> Dash Platform v0.24 should fix this, and that is the next version so fingers crossed!
+          <li>The Dash testnet must also be working, which should be the case is the very near future.</li>
+        </ul>
+      </Alert>
+      :
+      <></>
+      } */}
+
+       <div id="bodytext">
+          {/* <h5>
+          <Badge bg="primary">Purpose of DashGetNames</Badge>
+          Purpose of DashGetNames
+        </h5> */}
+          <div>
+            {/* <p className="paragraph-shift">
+            <b>For everyone to interact and test the Dash Platform as it nears completion on Testnet.
+            </b> 
+          </p> */}
+
+            {/* <li>
+              <p>
+              Also very importantly with Dash, you no longer need long cryptic addresses to interact with others. But first, you will need a name, and you have come to the right place - DashGetNames!
+              </p>
+            </li> */}
+            {/* <li>
+              <p>
+                The way I like to explain Dash Platform is this: Think of Dash
+                (cryptocurrency) as the ocean and Dash Platform as the water's
+                surface. Identities are the boats on the water, and Names are
+                the people in the boats.
+              </p>
+            </li> */}
+
+            {/* <p>
+            <b>The second and more important is for everyone to have the ability to purchase any name they want from the Dash Platform Name Service (DPNS). (When Mainnet is ready.)
+            </b>
+          </p>
+          <ul>
+            <li>
+              <p>
+                Names are how people communicate in real life, and it is how
+                people will interact on Dash Platform's Dapps (Decentralized
+                Applications) for Web3. And if Dash is going to be used in
+                everyday life, it should be as easy as having a name.
+              </p>
+            </li>
+          </ul> */}
+          </div>
+        </div>
+
+        <h3>
+            {/* <Badge bg="primary">How to Use</Badge> */}
+            How to Use
+            {/* <span> </span>
+          <Button size="sm"  variant="primary" onClick={() => {
+                    this.props.showModal('CreateNewWalletModal');
+                  }}><b>New Wallet</b>
+                  
+                <Badge bg="light" text="dark" pill>
+                  Create
+                </Badge>
+
+        </Button> */}
+          </h3>
+
+          <div>
+            {/* <p>
+              If you are brand new to Dash, you will need a wallet "mnemonic" and
+              an address to add funds to your wallet. You can do this in with
+              the <b>Create New Wallet</b> button above. (Currently, this is all
+              working on Testnet, so it is not real Dash. Also, actions like Identity Register and Name Purchase may take up to 20 seconds so please be patience, it is only Testnet.)
+            </p> */}
+
+            {/* <h6>
+              Before you use <b>Connect Wallet</b> below! Please understand that
+              the Mnemonic is not only the way to identify your wallet, but it
+              is also your password or "key". So treat it as a hot wallet (keep
+              low amount on) or only what you are willing to lose. This
+              website is purely a front end communicating with the Dash
+              Platform, but your browser may save your Mnemonic so clearing
+              browser history when done is recommended.
+            </h6> */}
+
+            {/* <p>If you having issues, use the "Test Connection" button to find out if the Testnet network is working. If it is not, then you may have to come back later or go inform Dash Core Group (DCG), but they probably already know and are working on it.</p> */}
+          </div>
