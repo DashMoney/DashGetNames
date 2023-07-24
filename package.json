@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^5.2.2",
-    "dash": "^3.24.11",
+    "dash": "^3.24.15",
     "localforage": "^1.10.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.6.0",
