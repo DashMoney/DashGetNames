@@ -717,6 +717,8 @@ class App extends React.Component {
       .finally(() => client.disconnect());
   };
 
+  //Test
+
   render() {
 
     this.state.mode === "primary"
