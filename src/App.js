@@ -64,9 +64,9 @@ class App extends React.Component {
 
       platformLogin: false,
 
-      skipSynchronizationBeforeHeight: 855000,
+      skipSynchronizationBeforeHeight: 900000, //Shift to 900000 for v0.25 from 855000 for v0.24
 
-      mostRecentBlockHeight: 855000,
+      mostRecentBlockHeight: 900000,
       expandedTopNav: false,
     };
   }
