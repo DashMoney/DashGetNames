@@ -216,30 +216,46 @@ class App extends React.Component {
   //   });
   // };
 
-  handleWalletDisconnect = () => { //UPDATE WITH NEW STATE BASED ON V0.25 UPGRADE -> 
+  handleWalletDisconnect = () => {
     this.setState(
       {
-        isLoggedIn: true,
-
-        isLoadingName: false,
-
+        isLoggedIn: false,
         
+        isLoadingIdentity: true, 
+        isLoadingIdInfo: true,
+  
+        isLoadingName: true,
+        isLoadingAlias: true,
+  
+        isLoadingWallet: true,
+  
+        mode: "dark",
         presentModal: "",
         isModalShowing: false,
-        
+        whichNetwork: "testnet",
+  
+  
         mnemonic: "",
-        identity: "",
+        identity: "",  
         identityRaw: "",
         identityInfo: "",
-        nameList: [],
+  
+        uniqueName: '',
+        aliasList: [],
+  
         accountBalance: "",
+        accountHistory:"",
         accountAddress: "",
-
-        walletId: "",
-        LocalForageKeys: [],
-        skipSynchronizationBeforeHeight: 855000,
-        mostRecentBlockHeight: 855000,
+  
+        skipSynchronizationBeforeHeight: 900000, 
         expandedTopNav: false,
+  
+        identityError: false,
+        idInfoError: false,
+        nameError: false,
+        aliasError: false,
+  
+        walletError:false,
       },
       () => this.componentDidMount()
     );
@@ -1028,7 +1044,7 @@ class App extends React.Component {
         {this.state.isModalShowing &&
         this.state.presentModal === "RegisterNameAliasModal" ? (
           <RegisterNameAliasModal
-            triggerAliasesLoading={this.triggerAliasesLoading}
+            triggerAliasLoading={this.triggerAliasLoading}
             handleAliases={this.handleAliases}
 
             isModalShowing={this.state.isModalShowing}

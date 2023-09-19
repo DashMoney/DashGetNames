@@ -106,7 +106,7 @@ class RegisterNameAliasModal extends React.Component{
     //setState to loading
     //disable button
     let nameToTry = event.target.validationCustom02.value;
-    this.props.triggerAliasesLoading(); //trigger for connected page spinner
+    this.props.triggerAliasLoading(); //trigger for connected page spinner
     this.setState({
       isLoading: true,
       searchName: event.target.value,

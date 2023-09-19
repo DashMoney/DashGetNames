@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
-import DGNLandingPage from "../../images/DGNLandingPage.png";
+import DGNDark from "../../images/IMG_1599.jpg";
+import DGNLight from "../../images/IMG_1600.jpg";
 import Image from "react-bootstrap/Image";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -87,7 +88,8 @@ class LandingPage extends React.Component {
           </Button>
         </div>
         <p></p>
-
+        {this.props.mode === "dark" ? 
+        <>
         <Container>
           <Row>
             <Col xs={1} md={3}></Col>
@@ -97,7 +99,7 @@ class LandingPage extends React.Component {
                   fluid
                   rounded
                   id="dash-landing-page"
-                  src={DGNLandingPage}
+                  src={DGNDark}
                   alt="Dash Wallet with Name"
                 />
                 <p></p>
@@ -109,6 +111,31 @@ class LandingPage extends React.Component {
             <Col xs={1} md={3}></Col>
           </Row>
         </Container>
+        </>
+        :
+        <>
+        <Container>
+          <Row>
+            <Col xs={1} md={3}></Col>
+            <Col xs={10} md={6} className="positionCaption">
+              <div className="positionCaption">
+                <Image
+                  fluid
+                  rounded
+                  id="dash-landing-page"
+                  src={DGNLight}
+                  alt="Dash Wallet with Name"
+                />
+                <p></p>
+                <Figure.Caption>
+                  <b>Dash Name Purchase - Preview</b>
+                </Figure.Caption>
+              </div>
+            </Col>
+            <Col xs={1} md={3}></Col>
+          </Row>
+        </Container>
+        </>}
         <p></p>
         <p className="paragraph-shift">
           If you are a new to "Crypto", welcome to Dash! Dash is like Bitcoin.
