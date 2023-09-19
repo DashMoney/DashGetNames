@@ -66,7 +66,7 @@ class LandingPage extends React.Component {
                       this.props.showModal('SearchForNameModal');
                     }}
           >
-            <b>Search Name Availabilty</b>
+            <b>Search Names</b>
 
             
           </Button>
@@ -81,7 +81,7 @@ class LandingPage extends React.Component {
                       this.props.showModal('ConnectWalletModal');
                     }}
           >
-            <b>Connect Existing Wallet</b>
+            <b>Connect Wallet</b>
 
            
           </Button>

@@ -37,7 +37,7 @@ class TopUpIdentityModal extends React.Component{
           <Modal.Title>Top Up Identity</Modal.Title>
           {closeButtonColor}
         </Modal.Header>
-        <Modal.Body>Purchase 0.01 Dash worth of Dash Platform Credits. (This is enough for many actions on Dash Platform.) </Modal.Body>
+        <Modal.Body>Purchase 0.010 Dash worth of Dash Platform Credits. (This is enough for many actions on Dash Platform.) </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={this.handleTopUp}>
             Top Up Identity

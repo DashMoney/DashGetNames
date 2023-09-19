@@ -45,21 +45,21 @@ class ConnectWalletModal extends React.Component {
     //console.log(event.nativeEvent.submitter.id); // identifies the button pressed
     
     if (this.formValidate(event.target.validationCustom01.value)) {
-      if(event.nativeEvent.submitter.id==='New-Wallet-Connect'){
-        this.props.handleNEWWalletConnection(event.target.validationCustom01.value);
-        this.props.collapseTopNav();
-        this.props.hideModal();
-        console.log('Successful New Wallet login');
-      }else{
+      // if(event.nativeEvent.submitter.id==='New-Wallet-Connect'){
+      //   this.props.handleNEWWalletConnection(event.target.validationCustom01.value);
+      //   this.props.collapseTopNav();
+      //   this.props.hideModal();
+      //   console.log('Successful New Wallet login');
+      // }else{
       this.props.handleWalletConnection(event.target.validationCustom01.value);
       this.props.collapseTopNav();
       this.props.hideModal();
-      console.log('Successful Full Sync login');
-      }
-      //console.log('Successful login');
-    } else {
-      console.log(`Invalid Mnemonic: ${event.target.validationCustom01.value}`);
-    }
+      //console.log('Successful Full Sync login');
+       }
+    //   //console.log('Successful login');
+    // } else {
+    //   console.log(`Invalid Mnemonic: ${event.target.validationCustom01.value}`);
+    // }
   };
 
   formValidate = (mnemonic) => {
@@ -89,9 +89,11 @@ class ConnectWalletModal extends React.Component {
   //     console.log(`Invalid Mnemonic: ${pastedText}`);
   //   }
   // }
-  componentDidMount() {
-    this.props.collapseTopNav()
-   }
+
+
+  // componentDidMount() {
+  //   this.props.collapseTopNav()
+  //  }
 
   render() {
     let modalBkg = "";

@@ -44,7 +44,7 @@ class RegisterIdentityModal extends React.Component {
           {closeButtonColor}
         </Modal.Header>
         <Modal.Body>
-         <p>Registering an Identity from Dash Platform will cost 0.01 Dash from your wallet funds. </p>
+         <p>Registering an Identity from Dash Platform will cost 0.010 Dash from your wallet's funds. </p>
          <p>This is for an Identity and Platform Credits which will connect your wallet to Platform and allow you to perform actions like purchasing a name.</p>
          {this.state.isError ? (
                 <Alert variant="warning">

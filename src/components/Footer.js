@@ -17,11 +17,11 @@ class Footer extends React.Component {
             <b>DashGetMoney.com</b>
             </a> to send and receive Dash just using your name!
           </li>
-          <li>Or<span></span>
+          {/* <li>Or<span></span>
             <a rel="noopener noreferrer" target="_blank" href="https://dashgettogether.com">
             <b>DashGetTogether.com</b>
             </a> for a group messenger Dapp!
-          </li>
+          </li> */}
 </ul>
 <ul>
 

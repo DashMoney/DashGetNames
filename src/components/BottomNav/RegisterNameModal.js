@@ -86,7 +86,7 @@ class RegisterNameModal extends React.Component{
 
     registerName()
       .then((d) => {console.log("Name registered:\n", d.toJSON());
-      this.props.handleNames(d.toJSON().label);
+      this.props.handleName(d.toJSON().label);
       this.props.hideModal();
       })
       .catch((e) =>{ console.error("Something went wrong:\n", e);
@@ -104,7 +104,6 @@ class RegisterNameModal extends React.Component{
     event.preventDefault();
     let nameToTry = event.target.validationCustom02.value;
     this.props.triggerNameLoading(); //trigger for connected page spinner
-    this.props.triggerButtonLoading();
     this.setState({
       isLoading: true,
       searchName: event.target.value,

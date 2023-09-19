@@ -87,7 +87,7 @@ class RegisterNameAliasModal extends React.Component{
 
     registerName()
       .then((d) =>{ console.log("Name registered:\n", d.toJSON());
-      this.props.handleNames(d.toJSON().label);
+      this.props.handleAliases(d.toJSON().label);
       this.props.hideModal();
     })
       .catch((e) =>{ console.error("Something went wrong:\n", e);
@@ -106,8 +106,7 @@ class RegisterNameAliasModal extends React.Component{
     //setState to loading
     //disable button
     let nameToTry = event.target.validationCustom02.value;
-    this.props.triggerNameLoading(); //trigger for connected page spinner
-    this.props.triggerButtonLoading();
+    this.props.triggerAliasesLoading(); //trigger for connected page spinner
     this.setState({
       isLoading: true,
       searchName: event.target.value,

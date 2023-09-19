@@ -15,7 +15,7 @@ import RegisterNameModal from "./components/BottomNav/RegisterNameModal";
 import RegisterNameAliasModal from "./components/BottomNav/RegisterNameAliasModal";
 
 import TopNav from "./components/TopNav/TopNav";
-import BottomNav from "./components/BottomNav/BottomNav";
+//import BottomNav from "./components/BottomNav/BottomNav";
 
 import LandingPage from "./components/Pages/LandingPage";
 
@@ -33,41 +33,63 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
-      isLoadingNames: false,
-      isLoadingButtons: false,
-      isLoadingPlatform:false,
+
+      isLoggedIn: false,
+
+      //instead of isLoading just combine the others and that will control the flow. and 
+      // wallet === 0 && identity === "no identity" -> send funds to wallet
+            // display no topup or names
+      // wallet !== 0 && identity === 'no identity' -> Register an identity
+            // display no topup/credits or names
+      // I dont think credits can with 0 with an identity but I can implement the red credits <- 
+      //
+
+      //SO INSTEAD OF ISLOADING AND USING A RACE JUST PASS THE FULL LOADING STATE THROUGH WITH THE 5 BELOW AND HANDLE FLOW WITH THEM.
+      
+      isLoadingIdentity: true, 
+      isLoadingIdInfo: true,
+
+      isLoadingName: true,
+      isLoadingAlias: true,
+
+      isLoadingWallet: true,
 
       mode: "dark",
       presentModal: "",
       isModalShowing: false,
       whichNetwork: "testnet",
-      isMnemonicAvail: false,
-      isIdentitiesAvail: false,
-      isNamesAvail: false,
+
+
       mnemonic: "",
-      identity: "",
+      identity: "",  //"no identity" -> handle possiblity -> DONE
       identityRaw: "",
       identityInfo: "",
-      nameList: [],
+
+      uniqueName: '',
+      aliasList: [],
 
       accountBalance: "",
+      accountHistory:"",
       accountAddress: "",
 
-      accountState: "", //TEST Save account to state
-      clientState: '', //TEST
+      //walletId: "",
 
-      walletId: "",
+      //LocalForageKeys: [], //Platform handles itself <-
+      //DashMoneyLFKeys: [],
 
-      LocalForageKeys: [],
-      DashMoneyLFKeys: [],
-
-      platformLogin: false,
+      //platformLogin: false,
 
       skipSynchronizationBeforeHeight: 900000, //Shift to 900000 for v0.25 from 855000 for v0.24
 
-      mostRecentBlockHeight: 900000,
+      //mostRecentBlockHeight: 900000,
       expandedTopNav: false,
+
+      identityError: false,
+      idInfoError: false,
+      nameError: false,
+      aliasError: false,
+
+      walletError:false, //REMOVE THIS BC GET WALLET AND IDENTITY AT THE SAME TIME AND IDENTITY WILL BE THE ERROR..
     };
   }
 
@@ -111,109 +133,100 @@ class App extends React.Component {
     }
   };
 
-  handleSkipSyncLookBackFurther = () => {
-    this.setState(
-      {
-        skipSynchronizationBeforeHeight:
-          this.state.skipSynchronizationBeforeHeight - 10000,
-        isLoading: true, // Need because Balance ===0 hides all the other spinners
-      },
-      () => this.handleLoginforRefreshWallet()
-    );
-  };
+  // handleLoginforRefreshWallet = () => { //Nothing call this. What is it for?? ->
 
-  handleLoginforRefreshWallet = () => {
-    const client = new Dash.Client({
-      network: this.state.whichNetwork,
-      wallet: {
-        mnemonic: this.state.mnemonic,
-        adapter: LocalForage.createInstance,
-        unsafeOptions: {
-          skipSynchronizationBeforeHeight:
-            this.state.skipSynchronizationBeforeHeight,
-        },
-      },
-    });
+  //   this.setState({
+    //  isLoadingWallet: true,
+  //   })
 
-    const retrieveIdentityIds = async () => {
-      const account = await client.getWalletAccount();
+  //   const client = new Dash.Client({
+  //     network: this.state.whichNetwork,
+  //     wallet: {
+  //       mnemonic: this.state.mnemonic,
+  //       adapter: LocalForage.createInstance,
+  //       unsafeOptions: {
+  //         skipSynchronizationBeforeHeight:
+  //           this.state.skipSynchronizationBeforeHeight,
+  //       },
+  //     },
+  //   });
 
-      this.setState({
-        // accountWallet: client, //Can I use this for the send TX? -> no
-        accountBalance: account.getTotalBalance(),
-        accountAddress: account.getUnusedAddress().address,
-      });
+  //   const retrieveIdentityIds = async () => {
+  //     const account = await client.getWalletAccount();
 
-      return account;
-    };
+  //     this.setState({
+  //       // accountWallet: client, //Can I use this for the send TX? -> no
+  //       accountBalance: account.getTotalBalance(),
+  //       accountAddress: account.getUnusedAddress().address,
+  //     });
 
-    retrieveIdentityIds()
-      .then((d) => {
-        //console.log("Wallet Account:\n", d);
-        this.setState({
-          isLoading: false, //Need for Balance ===0, sets true
-        });
-      })
-      .catch((e) => {
-        console.error("Something went wrong getting Wallet:\n", e);
-        this.setState({
-          isLoading: false, //Need for Balance ===0, sets true
-        });
-      })
-      .finally(() => client.disconnect());
-  };
+  //     return account;
+  //   };
 
-  triggerButtonLoading = () => {
+  //   retrieveIdentityIds()
+  //     .then((d) => {
+  //       //console.log("Wallet Account:\n", d);
+  //       this.setState({
+  //         isLoadingWallet: false, //Need for Balance ===0, sets true
+  //       });
+  //     })
+  //     .catch((e) => {
+  //       console.error("Something went wrong getting Wallet:\n", e);
+  //       this.setState({
+  //         isLoadingWallet: false, //Need for Balance ===0, sets true
+  //       });
+  //     })
+  //     .finally(() => client.disconnect());
+  // };
+
+
+  triggerNameLoading = () => { 
     this.setState({
-      isLoadingButtons: true,
+      isLoadingName: true,
     });
   };
 
-  triggerNameLoading = () => {
+  triggerAliasLoading = () => { 
     this.setState({
-      isLoadingNames: true,
+      isLoadingAlias: true,
     });
   };
 
   //TRIGGER THE LOGIN PROCESS
   handleWalletConnection = (theMnemonic) => {
 
-    this.getWalletIdBeforeLogin(theMnemonic, this.state.skipSynchronizationBeforeHeight);
+    this.getWalletAndIdentitywithMnem(theMnemonic);
 
     this.setState({
       mnemonic: theMnemonic,
-      isMnemonicAvail: true,
-      isLoading: true,
-      isLoadingPlatform: true,
+      isLoggedIn: true,
     });
   };
 
-  //Only if LFKeys.length === 0
-  handleNEWWalletConnection = (theMnemonic) => {
+  // //Only if LFKeys.length === 0
 
-    this.getWalletIdBeforeLogin(theMnemonic, this.state.mostRecentBlockHeight);
+  // handleNEWWalletConnection = (theMnemonic) => {
 
-    this.setState({
-      mnemonic: theMnemonic,
-      isMnemonicAvail: true,
-      isLoading: true,
-      isLoadingPlatform: true,
-      skipSynchronizationBeforeHeight: this.state.mostRecentBlockHeight,
-    });
-  };
+  //   this.getWalletIdBeforeLogin(theMnemonic, this.state.mostRecentBlockHeight);
 
-  handleWalletDisconnect = () => {
+  //   this.setState({
+  //     mnemonic: theMnemonic,
+  //     isLoggedIn: true,
+  //     skipSynchronizationBeforeHeight: this.state.mostRecentBlockHeight,
+  //   });
+  // };
+
+  handleWalletDisconnect = () => { //UPDATE WITH NEW STATE BASED ON V0.25 UPGRADE -> 
     this.setState(
       {
-        isLoading: false,
-        isLoadingNames: false,
-        isLoadingButtons: false,
-        isLoadingPlatform: false,
+        isLoggedIn: true,
+
+        isLoadingName: false,
+
+        
         presentModal: "",
         isModalShowing: false,
-        isMnemonicAvail: false,
-        isIdentitiesAvail: false,
-        isNamesAvail: false,
+        
         mnemonic: "",
         identity: "",
         identityRaw: "",
@@ -236,120 +249,88 @@ class App extends React.Component {
   componentDidMount() {
 
     //1) GET WALLETID KEYS For New Wallet Login and Wallet Sync
-    LocalForage.config({
-      name: "dashevo-wallet-lib", 
-    });
+    //I don't need any of this because the wallet login handles it itself..
+    // LocalForage.config({
+    //   name: "dashevo-wallet-lib", 
+    // });
 
-    let dashevo = LocalForage.createInstance({
-      name: "dashevo-wallet-lib",
-    });
+    // let dashevo = LocalForage.createInstance({
+    //   name: "dashevo-wallet-lib",
+    // });
 
-    dashevo.keys()
-      .then((keys) => {
-        this.setState({
-          LocalForageKeys: keys,
-        });
-        console.log(keys);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    // dashevo.keys()
+    //   .then((keys) => {
+    //     this.setState({
+    //       LocalForageKeys: keys,
+    //     });
+    //     console.log(keys);
+    //   })
+    //   .catch(function (err) {
+    //     console.log(err);
+    //   });
 
   //****************************** */   
   
   //2) GET WALLETID KEYS FOR OBTAINING IDENTITY
 
-    LocalForage.config({
-      name: "dashmoney-platform-login",
-    });
+  //  WHEN I INTRODUCE THIS FEATURE GET THE DGM VERSION IT IS DOING WHAT I WANT <- !!!!!!!!!!!!!!!!!!!!! -> 
 
-    let DashMoneyLF = LocalForage.createInstance({
-      name: "dashmoney-platform-login",
-    });
+    // LocalForage.config({
+    //   name: "dashmoney-platform-login",
+    // });
 
-    DashMoneyLF.keys()
-      .then((keys) => {
-        this.setState({
-          DashMoneyLFKeys: keys,
-        });
-        console.log(keys);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    // let DashMoneyLF = LocalForage.createInstance({
+    //   name: "dashmoney-platform-login",
+    // });
+
+    // DashMoneyLF.keys()
+    //   .then((keys) => {
+    //     this.setState({
+    //       DashMoneyLFKeys: keys,
+    //     });
+    //     console.log(keys);
+    //   })
+    //   .catch(function (err) {
+    //     console.log(err);
+    //   });
 
 //****************************** */ 
     //3) GET MOST RECENT BLOCK HEIGHT FOR NEW WALLET LOGIN
 
-    const clientOpts = {
-      network: this.state.whichNetwork,
-    };
+    // const clientOpts = {
+    //   network: this.state.whichNetwork,
+    // };
 
-    const client = new Dash.Client(clientOpts);
+    // const client = new Dash.Client(clientOpts);
 
-    const getMostRecentBlockHeight = async () => {
-      const status = await client.getDAPIClient().core.getStatus();
+    // const getMostRecentBlockHeight = async () => {
+    //   const status = await client.getDAPIClient().core.getStatus();
 
-      return status;
-    };
+    //   return status;
+    // };
 
-    getMostRecentBlockHeight()
-      .then((d) => {
-        let blockHeight = d.chain.blocksCount;
-        console.log("Most Recent Block Height:\n", blockHeight);
-        this.setState({
-          mostRecentBlockHeight: blockHeight - 2500,
-        });
-      })
-      .catch((e) => {
-        console.error("Something went wrong:\n", e);
-      })
-      .finally(() => client.disconnect());
+    // getMostRecentBlockHeight()
+    //   .then((d) => {
+    //     let blockHeight = d.chain.blocksCount;
+    //     console.log("Most Recent Block Height:\n", blockHeight);
+    //     this.setState({
+    //       mostRecentBlockHeight: blockHeight - 2500,
+    //     });
+    //   })
+    //   .catch((e) => {
+    //     console.error("Something went wrong:\n", e);
+    //   })
+    //   .finally(() => client.disconnect());
   }
 
-  getWalletIdBeforeLogin = (theMnemonic,skipHeight) => {
-
-    const clientOpts = {
-      network: this.state.whichNetwork,
-      wallet: {
-        mnemonic: theMnemonic,
-        offlineMode: true,
-      },
-    };
-    const client = new Dash.Client(clientOpts);
-
-    const createWallet = async () => {
-      const account = await client.getWalletAccount();
-      
-      console.log("walletId:", account.walletId);
-      return account.walletId;
-    };
-
-    createWallet()
-      .then((d) => {
-        this.setState({
-          walletId: d,
-        },()=>this.retrieveIdentitiesfromWallet(theMnemonic, skipHeight));
-      })
-      .catch((e) => console.error("Something went wrong:\n", e))
-      .finally(() => client.disconnect());
-  }
-
-  retrieveIdentitiesfromWallet = (theMnemonic, blockHeight) => {
-
-    if (!this.state.isLoading) {//For Wallet Retry 
-      this.setState({
-        isLoading: true,
-      });
-    }
-
+  getWalletAndIdentitywithMnem = (theMnemonic) => { //gOT FROM DGM
     const client = new Dash.Client({
       network: this.state.whichNetwork,
       wallet: {
         mnemonic: theMnemonic,
         adapter: LocalForage.createInstance,
         unsafeOptions: {
-          skipSynchronizationBeforeHeight: blockHeight,
+          skipSynchronizationBeforeHeight: this.state.skipSynchronizationBeforeHeight,
         },
       },
     });
@@ -357,129 +338,212 @@ class App extends React.Component {
     const retrieveIdentityIds = async () => {
       const account = await client.getWalletAccount();
 
+      //console.log(account.getTotalBalance());
+      // console.log(account.getUnusedAddress().address);
+      //console.log(account.getTransactionHistory());
+
       this.setState({
+        //accountWallet: client, //Can I use this for the send TX?-> NO
 
         accountBalance: account.getTotalBalance(),
-        accountAddress: account.getUnusedAddress().address,
+        accountAddress: account.getUnusedAddress().address, //This can be used if you havent created the DGMDocument <-
+        //accountHistory: account.getTransactionHistory(),
       });
-
-       //console.log(account);
 
       return account.identities.getIdentityIds();
     };
 
     retrieveIdentityIds()
       .then((d) => {
-        console.log("Mnemonic identities:\n", d);
+      //  console.log("Mnemonic identities:\n", d);
         if (d.length === 0) {
           this.setState({
-            isLoading: false,
-            isLoadingPlatform:false,
-            isIdentitiesAvail: true,
+            isLoadingIdentity: false,
+            isLoadingWallet:false,
+
+            //These are not called so end loading
+            isLoadingIdInfo:false,
+            isLoadingAlias:false,
+            isLoadingName:false,
+
+            identity: "no identity",
           });
         } else {
           this.setState(
             {
-              isIdentitiesAvail: true,
-              isLoading: false,
               identity: d[0],
+              isLoadingIdentity: false,
+              isLoadingWallet:false,
+              //maintain Loading bc continuing to other functions
             },
             () => this.conductFullLogin(d[0])
           );
         }
       })
       .catch((e) => {
-        console.error("Something went wrong:\n", e);
+        console.error("Something went wrong getWalletAndIdentitywithMnem:\n", e);
         this.setState({
-          identity: 'Err',
-          isLoading: false,
+          identityError: true,
+          isLoadingIdentity:false,
         });
       })
       .finally(() => client.disconnect());
 
-    
-    console.log('Checking Platform Login')
-      this.checkPlatformOnlyLogin(theMnemonic);
-    
   };
+
+
+  // retrieveIdentitiesfromWallet = (theMnemonic, blockHeight) => {
+
+  //   if (!this.state.isLoading) {//For Wallet Retry <- removed
+  //     this.setState({
+  //       isLoadingIdentity: true,
+  //     });
+  //   }
+
+  //   const client = new Dash.Client({
+  //     network: this.state.whichNetwork,
+  //     wallet: {
+  //       mnemonic: theMnemonic,
+  //       adapter: LocalForage.createInstance,
+  //       unsafeOptions: {
+  //         skipSynchronizationBeforeHeight: blockHeight,
+  //       },
+  //     },
+  //   });
+
+  //   const retrieveIdentityIds = async () => {
+  //     const account = await client.getWalletAccount();
+
+  //     this.setState({
+
+  //       accountBalance: account.getTotalBalance(),
+  //       accountAddress: account.getUnusedAddress().address,
+  //     });
+
+  //      //console.log(account);
+
+  //     return account.identities.getIdentityIds();
+  //   };
+
+  //   retrieveIdentityIds()
+  //     .then((d) => {
+  //       console.log("Mnemonic identities:\n", d);
+  //       if (d.length === 0) {
+  //         this.setState({
+  //           isLoadingIdentity:false,
+  //           isLoadingWallet:false,
+  //           identity:"no identity"
+  //         });
+  //       } else {
+  //         this.setState(
+  //           {
+  //             isLoadingIdentity:false,
+  //             isLoadingWallet:false,
+  //             identity: d[0],
+  //           },
+  //           () => this.conductFullLogin(d[0])
+  //         );
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       console.error("Something went wrong:\n", e);
+  //       this.setState({
+  //         identityError: true, //Add handle for error -> 
+  //         isLoadingIdentity:false,
+  //         isLoadingWallet:false,
+  //       });
+  //     })
+  //     .finally(() => client.disconnect());
+
+    
+  //   console.log('Checking Platform Login')
+  //     this.checkPlatformOnlyLogin(theMnemonic);
+    
+  // };
 
   conductFullLogin = (theIdentity) => {
-    if (!this.state.platformLogin) {
-      this.handleLoginQueries(theIdentity);
-    }
-  };
+    // if (!this.state.platformLogin) { //Disconnected bc no platformlogin for now
+    //   this.handleLoginAndLFobjectCreate(theIdentity);
+    // }
 
-  checkPlatformOnlyLogin = (theMnemonic) => {
-    //THIS RUNS IN PARALLEL WITH THE retrieveIdentitiesfromWallet
-    
-  let isKeyAvail =this.state.DashMoneyLFKeys.includes(this.state.walletId);
-    
-        console.log(`DashMoney LF Test -> ${isKeyAvail}`);
-
-        if (isKeyAvail) {
-          console.log("Parallel Login");
-
-          let DashMoneyLF = LocalForage.createInstance({
-            name: "dashmoney-platform-login",
-          });
-
-          DashMoneyLF.getItem(this.state.walletId)
-            .then((val) => {
-              console.log("Value Retrieved", val);
-
-              if (
-                val !== null ||
-                typeof val.identity !== "string" ||
-                val.identity === ""
-              ) {
-                this.setState({
-                  platformLogin: true,
-                  identity: val.identity,
-                  walletId: this.state.walletId,
-                },()=>this.handleLoginQueries(val.identity));
-                
-              } else {
-                console.log("Local Forage Values Failed");
-              }
-            })
-            .catch((err) => {
-              console.error(
-                "Something went wrong getting from localForage:\n",
-                err
-              );
-            });
-
-        }
-      
-  };
-
-  handleLoginQueries = (theIdentity) => { 
-    console.log("Called handleLoginQueries");
+    //THIS SHOULD CALL IDINFO, NAMES, AND ALIASES
     this.getIdentityInfo(theIdentity);
-    this.getNamesfromIdentities(theIdentity);
+    this.getNamesfromIdentity(theIdentity);
+    this.getAliasfromIdentity(theIdentity);
+  };
 
-    if(!this.state.platformLogin){
-     //CREATE AN OBJECT AND PUT IT IN THERE!!!
-     let lfObject = {
-      identity: theIdentity,
-    };
+  // checkPlatformOnlyLogin = (theMnemonic) => {
+  //   //THIS RUNS IN PARALLEL WITH THE retrieveIdentitiesfromWallet
+    
+  // let isKeyAvail =this.state.DashMoneyLFKeys.includes(this.state.walletId);
+    
+  //       console.log(`DashMoney LF Test -> ${isKeyAvail}`);
 
-    let DashMoneyLF = LocalForage.createInstance({
-      name: "dashmoney-platform-login",
-    });
-    //This is where I save to localForage if walletId is not there.
-    DashMoneyLF.setItem(this.state.walletId, lfObject)
-      .then((d) => {
-        //return LocalForage.getItem(walletId);
-        console.log("Return from LF setitem:", d);
-      })
-      .catch((err) => {
-        console.error("Something went wrong setting to localForage:\n", err);
-      });
-    //******************** */    
-    }
+  //       if (isKeyAvail) {
+  //         console.log("Parallel Login");
+
+  //         let DashMoneyLF = LocalForage.createInstance({
+  //           name: "dashmoney-platform-login",
+  //         });
+
+  //         DashMoneyLF.getItem(this.state.walletId)
+  //           .then((val) => {
+  //             console.log("Value Retrieved", val);
+
+  //             if (
+  //               val !== null ||
+  //               typeof val.identity !== "string" ||
+  //               val.identity === ""
+  //             ) {
+  //               this.setState({
+  //                 platformLogin: true,
+  //                 identity: val.identity,
+  //                 walletId: this.state.walletId,
+  //               },()=>this.handleLoginQueries(val.identity));
+                
+  //             } else {
+  //               console.log("Local Forage Values Failed");
+  //             }
+  //           })
+  //           .catch((err) => {
+  //             console.error(
+  //               "Something went wrong getting from localForage:\n",
+  //               err
+  //             );
+  //           });
+
+  //       }
+      
+  // };
+
+  handleLoginAndLFobjectCreate = (theIdentity) => { //Disconnected
+    
+    this.getIdentityInfo(theIdentity);
+    this.getNamesfromIdentity(theIdentity);
+
+    // if(!this.state.platformLogin){
+    //  //CREATE AN OBJECT AND PUT IT IN THERE!!!
+    //  let lfObject = {
+    //   identity: theIdentity,
+    // };
+
+    // let DashMoneyLF = LocalForage.createInstance({
+    //   name: "dashmoney-platform-login",
+    // });
+    // //This is where I save to localForage if walletId is not there.
+    // DashMoneyLF.setItem(this.state.walletId, lfObject)
+    //   .then((d) => {
+    //     //return LocalForage.getItem(walletId);
+    //     console.log("Return from LF setitem:", d);
+    //   })
+    //   .catch((err) => {
+    //     console.error("Something went wrong setting to localForage:\n", err);
+    //   });
+    // //******************** */    
+    // }
 
   };
+
 
   getIdentityInfo = (theIdentity) => {
     console.log("Called get identity info");
@@ -498,39 +562,46 @@ class App extends React.Component {
         console.log("Identity retrieved:\n", d.toJSON());
         let idInfo = d.toJSON();
         this.setState({
+          isLoadingIdInfo: false,
           identityInfo: idInfo,
           identityRaw: d,
           
-          //isLoading: false, //Remove from here and put in names -> BC names should take longer...
         });
       }else{
         console.log("No Identity Info retrieved");
+        //If I have an identity then there will be something but if there isn't an identity than this is not called? -> 
       }
       })
       .catch((e) => {
-        console.error("Something went wrong in retrieving the identity:\n", e);
+        console.error("Something went wrong in retrieving the identityinfo:\n", e);
         this.setState({
-          isLoading: false,
-          identityInfo: "Error", //NEED TO HANDLE SO CAN DISPLAY ->
+          isLoadingIdInfo: false,
+          idInfoError: true, //NEED TO HANDLE SO CAN DISPLAY ->
         });
       })
       .finally(() => client.disconnect());
   };
 
-  handleNames = (nameToAdd) => {
-    if (!this.state.nameList.includes(nameToAdd)) {
+
+  handleAliases = (aliasToAdd) => {
+    if (!this.state.aliasList.includes(aliasToAdd)) {
       this.setState({
-        nameList: [...this.state.nameList, nameToAdd],
+        aliasList: [...this.state.aliasList, aliasToAdd],
       });
     }
     this.setState({
-      //Should catch the new name and aliases and stop spinner
-      isLoadingNames: false,
-      isLoadingButtons: false,
+      isLoadingAlias: false,
     });
   };
 
-  getNamesfromIdentities = (theIdentity) => {
+  handleName = (nameToAdd) => {
+    this.setState({
+      uniqueName: nameToAdd,
+      isLoadingName: false,
+    });
+  };
+
+  getNamesfromIdentity = (theIdentity) => {
     const client = new Dash.Client({ network: this.state.whichNetwork });
 
     const retrieveNameByRecord = async () => {
@@ -545,21 +616,29 @@ class App extends React.Component {
       .then((d) => {
         if (d.length === 0) {
           console.log("There are no Names.");
+          this.setState({
+            //Should catch the new name and aliases and stop spinner
+            isLoadingName: false,
+            uniqueName: 'no name'
+          });
+
         } else {
           let nameRetrieved = d[0].toJSON();
           console.log("Name retrieved:\n", nameRetrieved);
-          this.handleNames(nameRetrieved.label);
+          this.setState({
+            uniqueName: nameRetrieved.label,
+            isLoadingName: false,
+          });
         }
 
-        this.getAliasfromIdentity(theIdentity);
       })
       .catch((e) => {
         this.setState({       
-          isLoading: false,
+          isLoadingName: false,
+          nameError: true,
         });
-        console.error("Something went wrong:\n", e);
-        console.log("There is no dashUniqueIdentityId to retrieve");
-        this.getAliasfromIdentity(theIdentity);
+        console.error("Something went wrong getting names:\n", e);
+       // this.getAliasfromIdentity(theIdentity);
       })
       .finally(() => client.disconnect());
   };
@@ -580,32 +659,38 @@ class App extends React.Component {
         if (d.length === 0) {
           console.log("There are no Aliases.");
           this.setState({
-            isLoading: false,
-            isLoadingPlatform: false,
+            isLoadingAlias: false,
           });
+
         } else {
+
           let aliasesRetrieved = d.map((alias) => {
             console.log("Alias: ", alias.toJSON().label);
             return alias.toJSON().label;
           });
-
+//WHAT AM i DOING THIS FOR AND NOT JUST SETTING IN STATE? -> 
           let filteredAliases = aliasesRetrieved.filter(
-            (alias) => !this.state.nameList.includes(alias)
+            (alias) => !this.state.aliasList.includes(alias)
           );
+
           this.setState({
-            isLoading: false,
-            nameList: [...this.state.nameList, ...filteredAliases],
+            isLoadingAlias: false,
+            aliasList: [...this.state.aliasList, ...filteredAliases],
           });
         }
-      })
-      .catch((e) => console.error("Something went wrong:\n", e))
+      })  //ADD THE ALIASERROR AND HANDLE AS WELL -> 
+      .catch((e) => console.error("Something went wrong with getAlias:\n", e))
       .finally(() => client.disconnect());
   };
 
-  registerIdentity = () => {
+
+// ####  ####  WRITE ACTIONS BELOW  #### ####
+
+  registerIdentity = () => { //REIMPLEMENT LFOBJ CREATE WHEN GET TO THAT POINT <-
     
     this.setState({
-      isLoading: true,
+      isLoadingIdentity: true,
+      isLoadingIdInfo: true,
     });
 
 
@@ -636,45 +721,54 @@ class App extends React.Component {
             identity: idInfo.id,
             identityInfo: idInfo,
             identityRaw: d,
-            isLoading: false,
+            uniqueName: 'no name', //This sets up the next step
+            isLoadingIdentity: false,
+            isLoadingIdInfo: false,
             accountBalance: this.state.accountBalance - 1000000,
           }
         );
-        if(!this.state.platformLogin){
-          //CREATE AN OBJECT AND PUT IT IN THERE!!!
-          let lfObject = {
-           identity: idInfo.id,
-         };
+
+
+        // if(!this.state.platformLogin){
+        //   //CREATE AN OBJECT AND PUT IT IN THERE!!!
+        //   let lfObject = {
+        //    identity: idInfo.id,
+        //  };
      
-         let DashMoneyLF = LocalForage.createInstance({
-           name: "dashmoney-platform-login",
-         });
-         //This is where I save to localForage if walletId is not there.
-         DashMoneyLF.setItem(this.state.walletId, lfObject)
-           .then((d) => {
-             //return LocalForage.getItem(walletId);
-             console.log("Return from LF setitem:", d);
-           })
-           .catch((err) => {
-             console.error("Something went wrong setting to localForage:\n", err);
-           });
-         //******************** */    
-         }
+        //  let DashMoneyLF = LocalForage.createInstance({
+        //    name: "dashmoney-platform-login",
+        //  });
+        //  //This is where I save to localForage if walletId is not there.
+        //  DashMoneyLF.setItem(this.state.walletId, lfObject)
+        //    .then((d) => {
+        //      //return LocalForage.getItem(walletId);
+        //      console.log("Return from LF setitem:", d);
+        //    })
+        //    .catch((err) => {
+        //      console.error("Something went wrong setting to localForage:\n", err);
+        //    });
+        //  //******************** */    
+        //  }
+
+
       })
       .catch((e) => {
         console.error("Something went wrong:\n", e);
         this.setState({
-          isLoading: false,
+          isLoadingIdentity: false,
+          isLoadingIdInfo: false,
+          identityError:true,
         });
       })
       .finally(() => client.disconnect());
   };
 
   doTopUpIdentity = (numOfCredits) => {
+
     this.setState({
-      isLoading: true,
-      isLoadingButtons: true,
+      isLoadingIdInfo: true,
     });
+
     const clientOpts = {
       network: this.state.whichNetwork,
       wallet: {
@@ -702,22 +796,23 @@ class App extends React.Component {
         this.setState({
           identityInfo: d.toJSON(),
           identityRaw: d,
-          isLoading: false,
-          isLoadingButtons: false,
+          isLoadingIdInfo: false,
           accountBalance: this.state.accountBalance - 1000000,
         });
       })
       .catch((e) => {
         console.error("Something went wrong:\n", e);
         this.setState({
-          isLoading: false,
-          isLoadingButtons: false,
+          isLoadingIdInfo: false,
+          IdInfoError: true, //Add handle for error -> 
         });
       })
       .finally(() => client.disconnect());
   };
 
-  //Test
+  //Name and Alias purchase is done in the modal.
+
+  
 
   render() {
 
@@ -738,7 +833,7 @@ class App extends React.Component {
           mode={this.state.mode}
           showModal={this.showModal}
           whichNetwork={this.state.whichNetwork}
-          isMnemonicAvail={this.state.isMnemonicAvail}
+          isLoggedIn={this.state.isLoggedIn}
           expandedTopNav={this.state.expandedTopNav}
           collapseTopNav={this.collapseTopNav}
           toggleTopNav={this.toggleTopNav}
@@ -746,24 +841,37 @@ class App extends React.Component {
 
         <Image fluid="true" id="dash-bkgd" src={DashBkgd} alt="Dash Logo" />
 
-        {!this.state.isMnemonicAvail ? (
-          <LandingPage showModal={this.showModal} mode={this.state.mode} />
+        {!this.state.isLoggedIn ? (
+          <LandingPage 
+          showModal={this.showModal} 
+          mode={this.state.mode} 
+          />
         ) : (
           <>
             <ConnectedWalletPage
-              handleSkipSyncLookBackFurther={this.handleSkipSyncLookBackFurther}
+              
               showModal={this.showModal}
-              isLoading={this.state.isLoading}
-              isLoadingNames={this.state.isLoadingNames}
-              isLoadingPlatform={this.state.isLoadingPlatform}
+              
+              isLoadingIdentity={this.state.isLoadingIdentity}
+              isLoadingIdInfo={this.state.isLoadingIdInfo}
+
+              isLoadingName={this.state.isLoadingName}
+              isLoadingAlias={this.state.isLoadingAlias}
+
+              isLoadingWallet={this.state.isLoadingWallet}
+
               identity={this.state.identity}
+              identityRaw={this.state.identityRaw}
               identityInfo={this.state.identityInfo}
-              nameList={this.state.nameList}
+
+              uniqueName={this.state.uniqueName}
+              aliasList={this.state.aliasList}
+
               accountBalance={this.state.accountBalance}
               mode={this.state.mode}
             />
 
-            <BottomNav
+            {/* <BottomNav
               retrieveIdentitiesfromWallet={this.retrieveIdentitiesfromWallet}
               accountBalance={this.state.accountBalance}
               nameList={this.state.nameList}
@@ -775,11 +883,12 @@ class App extends React.Component {
               identity={this.state.identity}
               identityInfo={this.state.identityInfo}
               showModal={this.showModal}
-              isMnemonicAvail={this.state.isMnemonicAvail}
+              isMnemonicAvail={this.state.isMnemonicAvail} //REPLACE WITH ISLOGGEDIN
+              isLoggedIn={this.state.isLoggedIn}
               handleWalletDisconnect={this.handleWalletDisconnect}
               expandedBottomNav={this.state.expandedBottomNav}
               collapseTopNav={this.collapseTopNav}
-            />
+            /> */}
           </>
         )}
 
@@ -897,8 +1006,9 @@ class App extends React.Component {
         {this.state.isModalShowing &&
         this.state.presentModal === "RegisterNameModal" ? (
           <RegisterNameModal
-            triggerButtonLoading={this.triggerButtonLoading}
             triggerNameLoading={this.triggerNameLoading}
+            handleName={this.handleName}
+
             isModalShowing={this.state.isModalShowing}
             hideModal={this.hideModal}
             mode={this.state.mode}
@@ -909,7 +1019,6 @@ class App extends React.Component {
             skipSynchronizationBeforeHeight={
               this.state.skipSynchronizationBeforeHeight
             }
-            handleNames={this.handleNames}
             collapseTopNav={this.collapseTopNav}
           />
         ) : (
@@ -919,8 +1028,9 @@ class App extends React.Component {
         {this.state.isModalShowing &&
         this.state.presentModal === "RegisterNameAliasModal" ? (
           <RegisterNameAliasModal
-            triggerButtonLoading={this.triggerButtonLoading}
-            triggerNameLoading={this.triggerNameLoading}
+            triggerAliasesLoading={this.triggerAliasesLoading}
+            handleAliases={this.handleAliases}
+
             isModalShowing={this.state.isModalShowing}
             hideModal={this.hideModal}
             mode={this.state.mode}
@@ -931,7 +1041,6 @@ class App extends React.Component {
             skipSynchronizationBeforeHeight={
               this.state.skipSynchronizationBeforeHeight
             }
-            handleNames={this.handleNames}
             collapseTopNav={this.collapseTopNav}
           />
         ) : (

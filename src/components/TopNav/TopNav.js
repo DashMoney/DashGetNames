@@ -103,28 +103,8 @@ class TopNav extends React.Component {
                 </Nav.Link>
 
 
-                {this.props.isMnemonicAvail ? (
-                  <>
-                  {this.props.accountBalance === 0 && this.props.identity === '' ? 
-                  <Nav.Link>
-                  <Button
-                    variant={buttonColor}
-                    onClick={() => {
-                      this.props.showModal("DisconnectWalletModal");
-                    }}
-                  >
-                    Connected
-                    <Badge
-                      className="createwalletbtn"
-                      bg="light"
-                      text="dark"
-                      pill
-                    >
-                      Log Out
-                    </Badge>
-                  </Button>
-                </Nav.Link>
-                :
+                {this.props.isLoggedIn ? 
+                  <>                
                 <Nav.Link>
                   <Button
                     variant={buttonColor}
@@ -143,8 +123,27 @@ class TopNav extends React.Component {
                     </Badge>
                   </Button>
                 </Nav.Link>
-                }</>
-                ) : (
+                
+                <Nav.Link>
+                  <Button
+                    variant={buttonColor}
+                    onClick={() => {
+                      this.props.showModal("DisconnectWalletModal");
+                    }}
+                  >
+                    Connected
+                    <Badge
+                      className="createwalletbtn"
+                      bg="light"
+                      text="dark"
+                      pill
+                    >
+                      Log Out
+                    </Badge>
+                  </Button>
+                </Nav.Link>
+                </>
+                 : 
                   <Nav.Link>
                     <Button
                       variant={buttonColor}
@@ -163,7 +162,7 @@ class TopNav extends React.Component {
                       </Badge>
                     </Button>
                   </Nav.Link>
-                )}
+                }
               </Nav>
             </Navbar.Collapse>
           </Container>

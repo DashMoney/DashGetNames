@@ -11,7 +11,7 @@ class ConnectedWalletPage extends React.Component {
     super(props);
     this.state = {
       extraInfo: false,
-      IdentityInfo: false,
+      //IdentityInfo: false,
     };
   }
 
@@ -27,15 +27,39 @@ class ConnectedWalletPage extends React.Component {
     }
   };
 
-  handleIdentityInfo = () => {
-    if (this.state.IdentityInfo === false)
-      this.setState({
-        IdentityInfo: true,
-      });
-    else {
-      this.setState({
-        IdentityInfo: false,
-      });
+  // handleIdentityInfo = () => {
+  //   if (this.state.IdentityInfo === false)
+  //     this.setState({
+  //       IdentityInfo: true,
+  //     });
+  //   else {
+  //     this.setState({
+  //       IdentityInfo: false,
+  //     });
+  //   }
+  // };
+
+  handleDenomDisplay = (duffs) => {
+    if (duffs >= 1000000) {
+      return (
+        <span style={{ color: "#008de4" }}>
+          {(duffs / 100000000).toFixed(3)} Dash
+        </span>
+      );
+    } else {
+      return (
+        <span style={{ color: "#008de4" }}>
+          {(duffs / 100000).toFixed(2)} mDash
+        </span>
+      );
+    }
+  };
+
+  handleDenomDisplayNoStyle = (duffs) => {
+    if (duffs >= 1000000) {
+      return <span>{(duffs / 100000000).toFixed(3)} Dash</span>;
+    } else {
+      return <span>{(duffs / 100000).toFixed(2)} mDash</span>;
     }
   };
 
@@ -47,275 +71,259 @@ class ConnectedWalletPage extends React.Component {
     } else {
       buttonColor = "outline-light";
     }
-    let listofNames = this.props.nameList.map((name, index) => {
+
+    let listofAliases = this.props.aliasList.map((alias, index) => {
       return (
         <li key={index}>
-          <b>{name}</b>
+          <h5>
+            <b>{alias}</b>
+          </h5>
         </li>
       );
     });
 
-
-    let dashAmt = this.props.accountBalance / 100000000;
-    let dashAmt2Display = dashAmt.toFixed(3); 
-
     return (
       <div id="bodytext">
-        <h3>
-          <Badge bg="primary">Your Connected Wallet</Badge>
-        </h3>
+        <h2>
+          <Badge bg="primary" pill>
+            Your Connected Wallet
+          </Badge>
+        </h2>
 
-        {this.props.isLoading &&
-         this.props.accountBalance === 0 &&
-         this.props.identity !== "" &&
-         this.props.identity !== "Err"? (
+        {/* START OF THE NEW CONNECTED PAGE FLOW */}
+        {!this.props.identityError &&
+        !this.props.identityInfoError &&
+        !this.props.walletError &&
+        !this.props.nameError ? (
+          <>
+            {this.props.isLoadingWallet ? (
               <>
-                <p></p>
-                <div id="spinner">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
+                <div className="indentStuff">
+                  <b>Wallet Balance</b>
+
+                  <h4>Loading..</h4>
                 </div>
-                <p></p>
               </>
             ) : (
-              <></>
-            )}
-
-        {this.props.accountBalance === 0 && this.props.identity !== "" &&
-         this.props.identity !== "Err" ? (
-          <>
-            <span>
-              There appears to be insufficient funds in your wallet.
-              <span> </span>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  this.props.handleSkipSyncLookBackFurther();
-                }}
-              >
-                <b>Check Again..</b>
-
-                <Badge bg="light" text="dark" pill>
-                  Wallet
-                </Badge>
-              </Button>
-            </span>
-            <p></p>
-            <p>
-              {" "}
-              This happens on occassion, when you are sure there should be funds
-              in your wallet, you just need to look farther back on the
-              blockchain. It will just take a little extra time.
-            </p>
-            <p>
-              {" "}
-              Press Check Again to search farther back on the blockchain for
-              your transactions.
-            </p>
-            <p></p>
-          </>
-        ) : (
-          <>
-            {this.props.accountBalance !== 0 &&
-            this.props.accountBalance !== "" &&
-            this.props.identity !== "Err" ? (
               <>
-                <p> </p>
                 <div className="indentStuff">
-                  <b>Dash Balance</b>
+                  <b>Wallet Balance</b>
                   <h4>
-                    <b>{dashAmt2Display}</b>
+                    <b>{this.handleDenomDisplay(this.props.accountBalance)}</b>
                   </h4>
                 </div>
-                <p></p>
               </>
-            ) : (
-              <></>
             )}
 
-            {this.props.isLoading ? (
+            {!this.props.isLoading &&
+            !this.props.isLoadingWallet &&
+            this.props.identity === "no identity" &&
+            this.props.accountBalance === 0 ? (
               <>
-                <p></p>
-                <div id="spinner">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
+                <p>There are insufficient funds in your wallet.</p>
+
+                <div className="d-grid gap-2" id="button-edge">
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    onClick={() => {
+                      this.props.showModal("SendFundsModal");
+                    }}
+                  >
+                    <b>Send Funds to Wallet</b>
+                  </Button>
                 </div>
-                <p></p>
               </>
             ) : (
               <></>
             )}
 
-            <div>
-              {!this.props.isLoading &&
-              !this.props.isLoadingPlatform &&
-              this.props.identity === "" &&
-              this.props.accountBalance === 0 ? (
-                <div id="bodytext">
-                  <p>
-                    There are insufficient funds in your wallet. Please use{" "}
-                    <span> </span>
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      onClick={() => {
-                        this.props.showModal("SendFundsModal");
-                      }}
-                    >
-                      <b>Send Wallet</b>
-
-                      <Badge bg="light" text="dark" pill>
-                        Funds
-                      </Badge>
-                    </Button>
-                    <span> </span>
-                    and <b>Retry Wallet</b> below.
-                  </p>
-                  <p></p>
+            {!this.props.isLoadingIdentity &&
+            this.props.identity === "no identity" &&
+            this.props.accountBalance !== 0 ? (
+              <>
+                <div className="d-grid gap-2" id="button-edge">
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    onClick={() => {
+                      this.props.showModal("RegisterIdentityModal");
+                    }}
+                  >
+                    <b>Register Identity</b>
+                  </Button>
                 </div>
+                <p></p>
+                <div id="bodytext">
+                <p>
+                  You are ready to{' '}
+                  <b>Register an Identity</b> and then begin name purchasing!
+                </p>
+                </div>
+                {/* <p>
+                    If this action doesn't work, Testnet Platform may be down.
+                  </p> */}
+              </>
+            ) : (
+              <></>
+            )}
+
+            <div className="ms-2 me-auto">
+              {!this.props.isLoadingIdentity &&
+              !this.props.isLoadingIdInfo &&
+              this.props.identityInfo !== "" &&
+              this.props.identity !== "no identity" ? (
+                <>
+                  <p></p>
+
+                  {/* <div className="id-line "> */}
+                  {/* Insert beginning************** */}
+
+                  <Button
+                    variant="primary"
+                    onClick={() => this.props.showModal("TopUpIdentityModal")}
+                  >
+                    <b>TopUp Identity</b>
+                  </Button>
+
+                  <span>
+                    <Badge className="paddingBadge" bg="primary" pill>
+                      {this.props.identityInfo.balance} Credits
+                    </Badge>
+                  </span>
+                  {/* </div> */}
+                  <p></p>
+                </>
               ) : (
                 <></>
               )}
 
-         {this.props.identity === "Err"?
-         <><p>
-         Testnet Platform may be down, please refresh page and try again. Or check the network with <b>Test Connection</b>.
-       </p></>
-         :
-         <></>}
+              {!this.props.isLoadingAlias &&
+              !this.props.isLoadingName &&
+              this.props.identity !== "no identity" ? (
+                <>
+                  {this.props.uniqueName === "no name" ? (
+                    <>
+                      <div className="indentStuff">
+                        <h4>
+                          <b>Your Dash Name</b>
+                        </h4>
+                      </div>
+                      <div className="d-grid gap-2" id="button-edge">
+                        <Button variant="primary"
+                        onClick={() => this.props.showModal("RegisterNameModal")}
+                        >
+                          <b>Purchase Name</b>
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
 
-              {!this.props.isLoading &&
-              !this.props.isLoadingPlatform &&
-              this.props.identityInfo === "" &&
-              this.props.identity !== "Err" &&
-              this.props.accountBalance !== 0 ? (
-                <div id="bodytext">
-                  <p>
-                    You are ready to
-                    <b> Register Identity</b> below to begin name purchasing!
-                  </p>
-                  {/* <p>
-                    If this action doesn't work, Testnet Platform may be down.
-                  </p> */}
-                </div>
+                  {this.props.uniqueName !== "no name" ? (
+                    <>
+                      {this.props.aliasList.length === 0 ? (
+                        <>
+                          <div className="indentStuff">
+                            <h4>
+                              <b>Your Dash Name</b>
+                            </h4>
+                            <ul>
+                              <li>
+                                <h5>
+                                  <b>{this.props.uniqueName}</b>
+                                </h5>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="d-grid gap-2" id="button-edge">
+                            <Button variant="primary"
+                        onClick={() => this.props.showModal("RegisterNameAliasModal")}>
+                              <b>Purchase Alias</b>
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="indentStuff">
+                            <h4>
+                              <b>Your Dash Names</b>
+                            </h4>
+                            <ul>
+                              <li>
+                                <h5>
+                                  <b>{this.props.uniqueName}</b>
+                                </h5>
+                              </li>
+                              {listofAliases}
+                            </ul>
+                          </div>
+                          <div className="d-grid gap-2" id="button-edge">
+                            <Button variant="primary" 
+                            onClick={() => this.props.showModal("RegisterNameAliasModal")}
+                            >
+                              <b>Purchase Alias</b>
+                            </Button>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </>
               ) : (
                 <></>
               )}
             </div>
-
-            {!this.props.isLoading && this.props.identityInfo !== "" &&
-         this.props.identity !== "Err" ? (
+          </>
+        ) : (
+          <>
+            {this.props.identityError ? (
               <>
-                <p></p>
-                <div className="ms-2 me-auto">
-                  <div className="id-line ">
-                    
-                    {/* Insert beginning************** */}
-{/* 
-                    <Dropdown>
-                      <Dropdown.Toggle
-                        size="sm"
-                        variant="primary"
-                        id="dropdown-basic"
-                        onClick={() => {
-                          this.handleIdentityInfo();
-                        }}
-                      >
-                        <b>Identity</b>
-                      </Dropdown.Toggle>
-                    </Dropdown>
-
-                    {this.state.IdentityInfo ? (
-                      <>
-                        <p>{this.props.identityInfo.id}</p>
-                      </>
-                    ) : (
-                      <></>
-                    )} */}
-
-                    {/* Insert Ending *******************************/}
-
-                <h5>
-                  <Badge className="paddingBadge" bg="primary">
-                    Identity
-                  </Badge>
-                </h5>
-
-                    <p>
-                      <Badge className="paddingBadge" bg="primary" pill>
-                        {this.props.identityInfo.balance} Credits
-                      </Badge>
-                    </p>
-                  </div>
-                  <div className="indentStuff">
-                    <h5>
-                      {/* This will be singular or plural */}
-
-                      {this.props.nameList.length !== 0 ? (
-                        this.props.nameList.length === 1 ? (
-                          <Badge bg="primary">Your Dash Name</Badge>
-                        ) : (
-                          <Badge bg="primary">Your Dash Names</Badge>
-                        )
-                      ) : (
-                        <Badge bg="primary">Your Dash Names</Badge>
-                      )}
-                    </h5>
-                    <ul>
-                      {this.props.nameList.length === 0 ? (
-                        <p>(Names appear here after purchase)</p>
-                      ) : (
-                        listofNames
-                      )}
-                    </ul>
-                    {this.props.isLoadingNames ? (
-                      <div id="spinner">
-                        <p></p>
-                        <Spinner animation="border" role="status">
-                          <span className="visually-hidden">Loading...</span>
-                        </Spinner>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-                <p></p>
+                <p>
+                  Identity retrieval error. Testnet Platform may be down, please refresh page and try again, or check the network with <b>Test Connection</b>.
+                </p>
               </>
             ) : (
               <></>
             )}
+
+            {/* Put nameError, identityInfoError and wallet Error here as well I guess or can separate out to separte component and do 'alerts' instead of texts. */}
           </>
         )}
 
-{!this.props.isLoading && this.props.isLoadingPlatform ? (
-              <>
-                <p></p>
-                <div id="spinner">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
-                </div>
-                <p></p>
-              </>
-            ) : (
-              <></>
-            )}
+        {/* END OF NEW CONNECTED PAGE FLOW */}
+
+        {this.props.isLoadingIdentity ||
+        this.props.isLoadingIdInfo ||
+        this.props.isLoadingName ||
+        this.props.isLoadingAlias ? (
+          <>
+            <p></p>
+            <div id="spinner">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+            <p></p>
+          </>
+        ) : (
+          <></>
+        )}
 
         {/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */}
 
         <div className="positionButton">
-        <Button
-                  variant={buttonColor}
-                  onClick={() => {
-                    this.handleExtraInfo();
-                  }}
-                >
-                  <h3>Extra about names</h3>
-                </Button>
-              
+          <Button
+            variant={buttonColor}
+            onClick={() => {
+              this.handleExtraInfo();
+            }}
+          >
+            <h3>Extra about names</h3>
+          </Button>
         </div>
 
         {this.state.extraInfo ? (
