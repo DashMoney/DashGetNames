@@ -139,8 +139,8 @@ class LandingPage extends React.Component {
         <p></p>
         <p className="paragraph-shift">
           If you are a new to "Crypto", welcome to Dash! Dash is like Bitcoin.
-          But instead of developers like "Satoshi Nakamoto", we have "Quantum
-          Explorer!"
+          But instead of developers like Satoshi Nakamoto, we have Quantum
+          Explorer!
         </p>
         <p></p>
         <div id="bodytext">
@@ -181,12 +181,11 @@ class LandingPage extends React.Component {
                   
                   <li>
                     <p>
-                      Once your Wallet is connected, click <b>Register Identity</b> at the bottom of your screen.
+                      Once your Wallet is connected, click <b>Register Identity</b>.
                     </p>
                   </li>
                   <li>
-                     With your wallet and identity, <b>Purchase your Name</b> and begin the Dash Evolution
-                    experience!
+                     With your wallet and identity, <b>Purchase your Name</b> and begin the Dash Evolution!
                   </li>
                 </ol>
               </div>
