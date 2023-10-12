@@ -861,7 +861,7 @@ class App extends React.Component {
 
         <Image fluid="true" id="dash-bkgd" src={DashBkgd} alt="Dash Logo" />
 
-        <Container fluid>
+        <Container className="g-0">
   <Row className="justify-content-md-center">
     <Col md={11} lg={10} xl={9} xxl={8}>
 

@@ -49,7 +49,8 @@ class LandingPage extends React.Component {
     }
 
     return (
-      <>
+      <div className="gutterlook">
+
         <p></p>
         <h4 className="paragraph-shift" id="title-bar">
           <b>Dash, the Evolution is here..</b>
@@ -196,7 +197,8 @@ class LandingPage extends React.Component {
 
           
         </div>
-      </>
+
+      </div>
     );
   }
 }
