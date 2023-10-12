@@ -4,6 +4,10 @@ import LocalForage from "localforage";
 import DashBkgd from "./images/dash_digital-cash_logo_2018_rgb_for_screens.png";
 import Image from "react-bootstrap/Image";
 
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 import ConnectToANetworkModal from "./components/TopNav/ConnectToANetworkModal";
 
 import ConnectWalletModal from "./components/BottomNav/ConnectWalletModal";
@@ -857,6 +861,10 @@ class App extends React.Component {
 
         <Image fluid="true" id="dash-bkgd" src={DashBkgd} alt="Dash Logo" />
 
+        <Container fluid>
+  <Row className="justify-content-md-center">
+    <Col md={11} lg={10} xl={9} xxl={8}>
+
         {!this.state.isLoggedIn ? (
           <LandingPage 
           showModal={this.showModal} 
@@ -909,6 +917,10 @@ class App extends React.Component {
         )}
 
         <Footer />
+
+        </Col>
+        </Row>
+        </Container>
 
         {this.state.isModalShowing &&
         this.state.presentModal === "ConnectToANetworkModal" ? (
