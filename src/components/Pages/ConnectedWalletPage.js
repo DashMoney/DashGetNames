@@ -198,6 +198,36 @@ class ConnectedWalletPage extends React.Component {
                 <></>
               )}
 
+               {!this.props.isLoadingIdentity &&
+                this.props.isLoadingIdInfo &&
+              this.props.identityInfo !== "" &&
+              this.props.identity !== "no identity" ? (
+                <>
+                  <p></p>
+                  <Button
+                    variant="primary"
+                    disabled
+                  >
+                    <b>TopUp Identity</b>
+                  </Button>
+
+                  <span>
+                    <Badge className="paddingBadge" bg="primary" pill>
+                      Loading..
+                    </Badge>
+                  </span>
+                  
+                  <p></p>
+                </>
+              ) : (
+                <></>
+              )}
+
+              {/* ADD ^^^^ THE TOPUP LOADING STATE HERE 
+              isLoadingIdInfo IS SET TO TRUE DURING TOPUP
+              TEST => 
+              */}
+
               {!this.props.isLoadingAlias &&
               !this.props.isLoadingName &&
               this.props.identity !== "no identity" ? (
@@ -322,7 +352,7 @@ class ConnectedWalletPage extends React.Component {
               this.handleExtraInfo();
             }}
           >
-            <h3>Extra about names</h3>
+            <h3>More about name/alias</h3>
           </Button>
         </div>
 

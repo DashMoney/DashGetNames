@@ -824,7 +824,6 @@ class App extends React.Component {
         console.error("Something went wrong:\n", e);
         this.setState({
           isLoadingIdInfo: false,
-          IdInfoError: true, //Add handle for error -> 
         });
       })
       .finally(() => client.disconnect());
